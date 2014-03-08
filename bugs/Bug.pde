@@ -96,7 +96,7 @@ PVector getClosestPoint(PVector TESTPT, ArrayList PTS) {
   print("PTS.size() = "+PTS.size());
   for(int i = PTS.size()-1; i >= 0; i--){
     // get a object
-    PVector testPos = (PVector) PTS.get(i);
+    PVector testPos = (PVector) ((Bug)PTS.get(i)).loc;
     
     print(TESTPT);
     print(testPos);
