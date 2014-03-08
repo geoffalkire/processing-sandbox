@@ -15,7 +15,7 @@ public class Light {
   float my;
  
    public Light(){
-    print("light constructed");
+    //print("light constructed");
 
     this.spread = 200;
     wander_theta = random(TWO_PI);
