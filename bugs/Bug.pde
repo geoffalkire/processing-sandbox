@@ -52,16 +52,21 @@ public class Bug {
           //look for near by things to eat.
           //target = new PVector(mouseX,mouseY);
          Bug targetBug = getClosestBug(loc, bugs);
+         
+         
          if(targetBug != null)
          {
            target = targetBug.loc;
+           
+           //if it's close enough, eat it
+           eat(targetBug);
          }
          else
          {
+           //if I'm the only bug left, stop moving
            target = loc;
          }
-         //if it's close enough, eat it
-         eat(targetBug);
+
       
       }
       else 
