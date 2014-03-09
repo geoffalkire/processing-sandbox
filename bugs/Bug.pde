@@ -16,7 +16,7 @@ public class Bug {
   
   public boolean isPredator()
   {
-      return agro > 50;
+      return agro > 70;
   }
 
      // The Constructor 
@@ -35,7 +35,7 @@ public class Bug {
   private void InitializeSizeAndMovement()
   {
     agro = random(100);
-    radius = 10;
+    radius = 1;
     bugHealth = 50+random(100);
     velocity = new PVector(0,0);
     topspeed = random(10);
@@ -68,7 +68,7 @@ public class Bug {
          {
            target = targetBug.loc;
            
-           //if it's close enough, eat it
+           //if it's close enough and we are hungry, eat it
            eat(targetBug);
          }
          else
@@ -109,11 +109,11 @@ public class Bug {
   {
     //if the other bug is within our radius, eat it
     float d = loc.dist(targetBug.loc);
-    if(d < radius)
+    if(d < radius && radius < 10)
     {
       //absorb the bug's health, increase our radius, and kill the bug
       bugHealth += targetBug.bugHealth;
-      radius+= 2;
+      radius+= 1;
       bugs.remove(targetBug);
     }
   }
@@ -121,8 +121,8 @@ public class Bug {
   private void move(PVector target)
   {
           // Our algorithm for calculating acceleration:
-      print("In move. Target = "+target+"\n");
-      print ("Loc = "+loc+"\n");
+      //print("In move. Target = "+target+"\n");
+      //print ("Loc = "+loc+"\n");
       PVector dir = PVector.sub(target,loc);  // Find vector pointing towards target
       float d = loc.dist(target);
       
