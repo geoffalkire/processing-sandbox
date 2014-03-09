@@ -1,5 +1,6 @@
 int bugCount = 25;
 ArrayList<Bug> bugs;
+ArrayList<BugHive> bugHives;
 PVector temp;
 
 Light light;
@@ -14,8 +15,9 @@ void setup() {
   
   // Parameters go inside the parentheses when the object is constructed.
   bugs = new ArrayList<Bug>();
+  bugHives = new ArrayList<BugHive>();
   for (int i=0; i< bugCount; i++){
-    bugs.add(new Bug(0,100));
+    bugs.add(new Bug());
   }
 }
 
@@ -31,8 +33,19 @@ void draw() {
     bug.display();
     
   }
+  
+  for(int i = 0; i < bugHives.size(); i++)
+  {
+    BugHive bugHive = bugHives.get(i);
+    bugHive.GenerateBugs();
+    bugHive.Display();
+  }
 }
 
+void mouseClicked()
+{
+  bugHives.add(new BugHive(new PVector(mouseX,mouseY)));
+}
 
 
 

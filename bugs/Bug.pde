@@ -20,13 +20,23 @@ public class Bug {
   }
 
      // The Constructor 
-  public Bug(float tempXpos, float tempYpos) { 
+  public Bug(float tempXpos, float tempYpos) 
+  {     
+    loc = new PVector(tempXpos,tempYpos);
+    InitializeSizeAndMovement();
+  }
+  
+  public Bug() 
+  {
+    loc = new PVector(random(width),random(height));
+    InitializeSizeAndMovement();
+  }
+  
+  private void InitializeSizeAndMovement()
+  {
     agro = random(100);
-    
     radius = 10;
     bugHealth = 50+random(100);
-    loc = new PVector(random(width),random(height));
-    //location = new PVector(random(width),random(height));
     velocity = new PVector(0,0);
     topspeed = random(10);
   }
@@ -103,7 +113,7 @@ public class Bug {
     {
       //absorb the bug's health, increase our radius, and kill the bug
       bugHealth += targetBug.bugHealth;
-      radius++;
+      radius+= 2;
       bugs.remove(targetBug);
     }
   }
