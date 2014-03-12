@@ -23,7 +23,7 @@ public class BugHive
       int bugCountToGenerate = round(random(maxBugsToGenerate));
       for(int i = 0; i < bugCountToGenerate; i++)
       {
-        bugs.add(new Bug(_location.x, _location.y));
+        babyBugs.add(new Bug(_location.x, _location.y));
       }
       secondCounter = millis();
     }

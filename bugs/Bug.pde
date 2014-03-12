@@ -12,6 +12,17 @@ public class Bug {
   PVector target;
   color c;
   PVector loc;
+  
+  PVector randomDir;
+  PVector birthPlace;
+  
+  float reproPeriod; // reproduction frequency
+  float age;
+  float lifespan;
+  boolean killed;
+  boolean isPredator;
+  
+  
 
   
   public boolean isPredator()
@@ -23,42 +34,101 @@ public class Bug {
   public Bug(float tempXpos, float tempYpos) 
   {     
     loc = new PVector(tempXpos,tempYpos);
-    InitializeSizeAndMovement();
+    Initialize();
   }
   
   public Bug() 
   {
     loc = new PVector(random(width),random(height));
-    InitializeSizeAndMovement();
+    Initialize();
   }
   
-  private void InitializeSizeAndMovement()
+   public Bug(Bug parentBug) {
+     
+     randomDir = new PVector(random(width),random(height));
+     birthPlace = new PVector(parentBug.loc.x,parentBug.loc.y);
+     birthPlace.normalize();
+     birthPlace.mult(parentBug.radius);
+     
+     
+     loc = new PVector(birthPlace.x,birthPlace.y);
+     Initialize(parentBug);
+   }
+  
+  
+  private void Initialize()
   {
+    killed=false;
+    topspeed = random(10);
     agro = random(100);
+    isPredator = isPredator();
     radius = 1;
     bugHealth = 50+random(100);
     velocity = new PVector(0,0);
-    topspeed = random(10);
+    age = 0;
+    lifespan = 1000+random(-500,500)/topspeed;
+    reproPeriod = int(500+random(300))/topspeed;
+  }
+  
+    private void Initialize(Bug parentBug)
+  {
+    killed=false;
+    agro = modify(parentBug.agro);
+    radius = modify(parentBug.radius);
+    bugHealth = modify(parentBug.bugHealth);
+    velocity = new PVector(0,0);
+    topspeed = modify(parentBug.topspeed);
+    age = 0;
+    lifespan = modify(parentBug.lifespan);
+    reproPeriod = modify(parentBug.reproPeriod);
+  }
+  
+
+  public float modify(float val){
+   return val+= random(val*.1)*random(-1,1);
   }
 
   public void display() {
     noStroke();
-    fill(bugHealth,0,0);
-    ellipse(loc.x,loc.y,radius*2,radius*2);
+    fill(agro*4,bugHealth,0);
+    
+    ellipse(loc.x,loc.y,radius,radius);
   }
 
 
   public void drive() {
     
-    //bug life
+    //bug life and energy spent
     bugHealth-=topspeed*.1;
-    if (bugHealth<=0){
-     die(); 
+    age++;
+    if (bugHealth<=0 || age>=lifespan){
+      killed = true;
+     //die(); 
+    }
+    
+    //check if out of bounds by 1000px, kill if so
+    if (loc.y<-1000 || loc.y>height+1000 || loc.x<-1000 || loc.x>width+1000){ 
+     killed = true;
+      //die(); 
+    }
+    
+    
+    // reproduce
+    
+    if( time % int(reproPeriod) == 0)
+    {
+     //reproduce with variations of self
+     int litterSize= int(random(1, 5));
+     for (int i = litterSize; i<= litterSize; i++){
+       babyBugs.add(new Bug(loc.x, loc.y));
+       print (""+this+" reproduced");
+       bugHealth -= 30;//bugHeatlh/(litterSize+1);
+     }
     }
     
  
       //define target
-      if (isPredator()){
+      if (isPredator){
           //look for near by things to eat.
           //target = new PVector(mouseX,mouseY);
          Bug targetBug = getClosestBug(loc, bugs);
@@ -111,16 +181,16 @@ public class Bug {
     float d = loc.dist(targetBug.loc);
     if(d < radius && radius < 10)
     {
-      //absorb the bug's health, increase our radius, and kill the bug
-      bugHealth += targetBug.bugHealth;
-      radius+= 1;
-      bugs.remove(targetBug);
+      //absorb the bug's health based on agro
+      bugHealth += agro*2;
+      //hurt the target more. loss of energy overall.
+      targetBug.bugHealth-=agro*4;
     }
   }
   
   private void move(PVector target)
   {
-          // Our algorithm for calculating acceleration:
+      // Our algorithm for calculating acceleration:
       //print("In move. Target = "+target+"\n");
       //print ("Loc = "+loc+"\n");
       PVector dir = PVector.sub(target,loc);  // Find vector pointing towards target
@@ -138,7 +208,6 @@ public class Bug {
 
   public void die()
   {
-  
   bugs.remove(this);
   }
 
@@ -155,9 +224,6 @@ Bug getClosestBug(PVector TESTPT, ArrayList PTS) {
   for(int i = PTS.size()-1; i >= 0; i--){
     // get a object
     PVector testPos = (PVector) ((Bug)PTS.get(i)).loc;
-    
-    //print(TESTPT);
-    //print(testPos);
     
     // get the distance
     float d2 = PVector.dist(TESTPT, testPos);

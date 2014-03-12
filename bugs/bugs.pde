@@ -1,9 +1,11 @@
 int bugCount = 25;
 ArrayList<Bug> bugs;
+ArrayList<Bug> babyBugs;
 ArrayList<BugHive> bugHives;
 PVector temp;
 
 Light light;
+public int time = 0;
 
 
 void setup() {
@@ -15,13 +17,16 @@ void setup() {
   
   // Parameters go inside the parentheses when the object is constructed.
   bugs = new ArrayList<Bug>();
+  babyBugs = new ArrayList<Bug>();
   bugHives = new ArrayList<BugHive>();
   for (int i=0; i< bugCount; i++){
     bugs.add(new Bug());
   }
 }
 
+
 void draw() {
+  time++;
   background(30,0,70);
   
   light.move();
@@ -30,8 +35,14 @@ void draw() {
   for (int i = bugs.size()-1; i >= 0; i--) {
     Bug bug = bugs.get(i);
     bug.drive();
-    bug.display();
-    
+    bug.display();   
+   }
+  //removed killed bugs
+   for (int i = bugs.size()-1; i >= 0; i--) {
+    Bug bug = bugs.get(i);
+    if (bug.killed == true){
+    bug.die();
+   }
   }
   
   for(int i = 0; i < bugHives.size(); i++)
@@ -40,6 +51,16 @@ void draw() {
     bugHive.GenerateBugs();
     bugHive.Display();
   }
+  
+  
+  //move all baby bugs into bugs array list for processing next frame.
+  bugs.addAll(babyBugs);
+  
+  //clear baby bugs
+  for (int i = babyBugs.size()-1; i >= 0; i--) {
+  babyBugs.remove(i);
+  }
+  
 }
 
 void mouseClicked()
