@@ -105,7 +105,7 @@ PVector getClosestPoint(PVector TESTPT, ArrayList PTS) {
     // get the distance
     float d2 = PVector.dist(TESTPT, testPos);
     // ask the question
-    if(d2 < distClosest){
+    if(d2 < distClosest && TESTPT != testPos){
       // update the closest distance
       distClosest = d2;
       // remember the closest pos
