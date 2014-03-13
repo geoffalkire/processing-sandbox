@@ -67,12 +67,12 @@ public class Bug {
     }
     else
     {
+      topspeed = random(10);
       reproPeriod = int(500+random(300))/topspeed;
       agro = random(100);
       radius = 1;
       bugHealth = 50+random(100);
       lifespan = 1000+random(-500,500)/topspeed;
-      topspeed = random(10);
     }
   }
   
@@ -119,14 +119,14 @@ public class Bug {
   private void reproduce()
   {
     // reproduce
-    
+    //print("time=" + time + " and reproPeriod =" + reproPeriod + "\n");
     if( time % int(reproPeriod) == 0)
     {
      //reproduce with variations of self
      int litterSize= int(random(1, 5));
      for (int i = litterSize; i<= litterSize; i++){
        babyBugs.add(new Bug(loc.x, loc.y));
-       print (""+this+" reproduced");
+       print ("A bug reproduced!\n");
        bugHealth -= 30;//bugHeatlh/(litterSize+1);
      }
     }
