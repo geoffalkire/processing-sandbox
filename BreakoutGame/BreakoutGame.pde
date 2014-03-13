@@ -20,6 +20,7 @@ void draw()
   paddle.show();
   ball.move();
   ball.show();
+  bricks.show();
 }
 
 void keyPressed()

@@ -59,8 +59,57 @@ public class Ball
   
   public boolean collided()
   {
-    return collidedWithWall() || collidedWithPaddle();
+    return collidedWithWall() || collidedWithPaddle() || collidedWithBrick();
     
+  }
+  
+  public boolean collidedWithBrick()
+  {
+    boolean collisionDetected = false;
+//    for(int i = bricks.brickCollection.size() - 1; i >=0; i--)
+//    {
+//      Brick currentBrick = (Brick)bricks.brickCollection.get(i);
+//    
+//      if(location.x > currentBrick.getLeftSide() - radius && //hit left side
+//          location.y > currentBrick.getTopSide() && //is under top side
+//          location.y < currentBrick.getBottomSide())//is above bottom side
+//      {
+//        location.x = currentBrick.getLeftSide() - radius;
+//        velocity.x *= -1;
+//        collisionDetected = true;
+//      }
+//      else if(location.x < currentBrick.getRightSide() + radius &&//collided with right side of brick
+//              location.y > currentBrick.getTopSide() && //is under top side
+//              location.y < currentBrick.getBottomSide())//is above bottom side
+//      {
+//        location.x = currentBrick.getRightSide() + radius;
+//        velocity.x *= -1;
+//        collisionDetected = true;
+//      }
+//     else if(location.y > height-radius)//collided with bottom of screen
+//      {
+//        location.y = height-radius;
+//        //acceleration.y *= -1;
+//        velocity.y *= -1;
+//        collisionDetected = true;
+//      }
+//      else if(location.y < radius)//collided with top of screen
+//      {
+//        location.y = radius;
+        //acceleration.y *= -1;
+//        velocity.y *= -1;
+        //location.add(velocity);
+//        collisionDetected = true;
+//      }
+      
+//      return collisionDetected;
+      
+      //check for collisions from the top, bottom, and sides of brick
+//    }
+    
+    return false;
+    //is the ball on or in the brick?
+    //if so, reset its position and set its velocity
   }
   
   public boolean collidedWithPaddle()
@@ -68,7 +117,7 @@ public class Ball
     //is the ball on or in the paddle?
     //if so, reset its position and set its velocity
 
-    if( location.y + radius > paddle.getYBorder() &&
+    if( getBottom() > paddle.getYBorder() &&
           paddle.getLeftSide() < location.x &&
           paddle.getRightSide() > location.x)
     {
@@ -88,7 +137,8 @@ public class Ball
   public boolean collidedWithWall()
   {
     boolean collisionDetected = false;
-      if(location.x > width - radius)
+    
+      if(location.x > width - radius)//collided with right side of screen
       {
         location.x = width - radius;
         //acceleration.x *=-1;
@@ -96,7 +146,7 @@ public class Ball
         //location.add(velocity);
         collisionDetected = true;
       }
-      else if(location.x < radius)
+      else if(location.x < radius)//collided with left side of screen
       {
         location.x = radius;
         //acceleration.x *= -1;
@@ -104,26 +154,20 @@ public class Ball
         //location.add(velocity);
         collisionDetected = true;
       }
-      else if(location.y > height-radius)
+      else if(location.y > height-radius)//collided with bottom of screen
       {
         location.y = height-radius;
         //acceleration.y *= -1;
         velocity.y *= -1;
         collisionDetected = true;
       }
-      else if(location.y < radius)
+      else if(location.y < radius)//collided with top of screen
       {
-        //note: this is where the ball hits the bottom of the screen. This should cause the player to lose a life.
         location.y = radius;
         //acceleration.y *= -1;
         velocity.y *= -1;
         //location.add(velocity);
         collisionDetected = true;
-      }
-      
-      if(collisionDetected)
-      {
-        print("Collided with the wall!\n");
       }
       
       return collisionDetected;
