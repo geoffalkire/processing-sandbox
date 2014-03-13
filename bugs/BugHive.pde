@@ -7,7 +7,7 @@ public class BugHive
   public int maxBugsToGenerate = 10;
   public BugHive(PVector location)
   {
-    print("Creating BugHive. location = "+location);
+    //print("Creating BugHive. location = "+location);
     _location = location;
     radius = 15;
     secondCounter = millis();
@@ -15,9 +15,9 @@ public class BugHive
   
   public void GenerateBugs()
   {
-    print("Generating Bugs.\n");
-    print("secondCounter = " + secondCounter+"\n");
-    print("second = " + millis()+"\n");
+    //print("Generating Bugs.\n");
+    //print("secondCounter = " + secondCounter+"\n");
+    //print("second = " + millis()+"\n");
     if(millis() - secondCounter >= 1000)
     {
       int bugCountToGenerate = round(random(maxBugsToGenerate));

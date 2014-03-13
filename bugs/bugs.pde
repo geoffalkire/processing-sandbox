@@ -37,13 +37,7 @@ void draw() {
     bug.drive();
     bug.display();   
    }
-  //removed killed bugs
-   for (int i = bugs.size()-1; i >= 0; i--) {
-    Bug bug = bugs.get(i);
-    if (bug.killed == true){
-    bug.die();
-   }
-  }
+
   
   for(int i = 0; i < bugHives.size(); i++)
   {

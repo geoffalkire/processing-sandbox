@@ -1,11 +1,13 @@
-// Even though there are multiple objects, we still only need one class. 
-// No matter how many cookies we make, only one cookie cutter is needed.
 public class Bug { 
   
-  //PVector location;
+  //movement-related variables
   PVector velocity;
   PVector acceleration;
   float topspeed;
+  PVector randomDir;
+  PVector birthPlace;
+  
+  //bug stats
   public float bugHealth;
   float radius;
   float agro;
@@ -13,39 +15,32 @@ public class Bug {
   color c;
   PVector loc;
   
-  PVector randomDir;
-  PVector birthPlace;
-  
   float reproPeriod; // reproduction frequency
   float age;
   float lifespan;
-  boolean killed;
   boolean isPredator;
   
-  
 
-  
-  public boolean isPredator()
-  {
-      return agro > 70;
-  }
-
-     // The Constructor 
+  //Constructor for setting location of the bug initially
   public Bug(float tempXpos, float tempYpos) 
   {     
     loc = new PVector(tempXpos,tempYpos);
-    Initialize();
+    Initialize(null);
   }
   
+  //Constructor for setting a random start location for the bug initially
   public Bug() 
   {
     loc = new PVector(random(width),random(height));
-    Initialize();
+    Initialize(null);
   }
   
-   public Bug(Bug parentBug) {
+  //Constructor for inheriting traits of parent bug
+   public Bug(Bug parentBug) 
+   {
+   
+     //randomDir = new PVector(random(width),random(height));
      
-     randomDir = new PVector(random(width),random(height));
      birthPlace = new PVector(parentBug.loc.x,parentBug.loc.y);
      birthPlace.normalize();
      birthPlace.mult(parentBug.radius);
@@ -55,35 +50,33 @@ public class Bug {
      Initialize(parentBug);
    }
   
-  
-  private void Initialize()
+  //initialization of bug's properties
+  private void Initialize(Bug parentBug)
   {
-    killed=false;
-    topspeed = random(10);
-    agro = random(100);
-    isPredator = isPredator();
-    radius = 1;
-    bugHealth = 50+random(100);
-    velocity = new PVector(0,0);
-    age = 0;
-    lifespan = 1000+random(-500,500)/topspeed;
-    reproPeriod = int(500+random(300))/topspeed;
-  }
-  
-    private void Initialize(Bug parentBug)
-  {
-    killed=false;
-    agro = modify(parentBug.agro);
-    radius = modify(parentBug.radius);
-    bugHealth = modify(parentBug.bugHealth);
-    velocity = new PVector(0,0);
-    topspeed = modify(parentBug.topspeed);
-    age = 0;
-    lifespan = modify(parentBug.lifespan);
-    reproPeriod = modify(parentBug.reproPeriod);
-  }
-  
 
+    velocity = new PVector(0,0);
+    age = 0;
+    if(parentBug != null)
+    {
+      reproPeriod = modify(parentBug.reproPeriod);
+      agro = modify(parentBug.agro);
+      radius = modify(parentBug.radius);
+      bugHealth = modify(parentBug.bugHealth);
+      lifespan = modify(parentBug.lifespan);
+      topspeed = modify(parentBug.topspeed);
+    }
+    else
+    {
+      reproPeriod = int(500+random(300))/topspeed;
+      agro = random(100);
+      radius = 1;
+      bugHealth = 50+random(100);
+      lifespan = 1000+random(-500,500)/topspeed;
+      topspeed = random(10);
+    }
+  }
+  
+  //calculates inheritance values from parent to child
   public float modify(float val){
    return val+= random(val*.1)*random(-1,1);
   }
@@ -102,17 +95,29 @@ public class Bug {
     bugHealth-=topspeed*.1;
     age++;
     if (bugHealth<=0 || age>=lifespan){
-      killed = true;
-     //die(); 
+      //killed = true;
+     die(); 
     }
+    checkBoundaries();
     
-    //check if out of bounds by 1000px, kill if so
+    reproduce();
+
+    decideActions();
+      
+    
+  }
+  
+  private void checkBoundaries()
+  {
+        //check if out of bounds by 1000px, kill if so
     if (loc.y<-1000 || loc.y>height+1000 || loc.x<-1000 || loc.x>width+1000){ 
-     killed = true;
-      //die(); 
+     //killed = true;
+      die(); 
     }
-    
-    
+  }
+  
+  private void reproduce()
+  {
     // reproduce
     
     if( time % int(reproPeriod) == 0)
@@ -125,9 +130,11 @@ public class Bug {
        bugHealth -= 30;//bugHeatlh/(litterSize+1);
      }
     }
-    
- 
-      //define target
+  }
+  
+  private void decideActions()
+  {
+          //define target
       if (isPredator){
           //look for near by things to eat.
           //target = new PVector(mouseX,mouseY);
@@ -161,8 +168,6 @@ public class Bug {
       
       //move towards the target
       move(target);
-      
-    
   }
   
   private void heal(PVector target)
@@ -208,39 +213,39 @@ public class Bug {
 
   public void die()
   {
-  bugs.remove(this);
+    bugs.remove(this);
   }
 
 
-// A function that returns the closest point from a set
-Bug getClosestBug(PVector TESTPT, ArrayList PTS) {
-
-  // some impossibly high distance (ie something is always closer)
-  float distClosest = 999999;
-  // the closest point
-  Bug theClosestBug = null;
-  // Loop to find the closest point
-  //print("PTS.size() = "+PTS.size());
-  for(int i = PTS.size()-1; i >= 0; i--){
-    // get a object
-    PVector testPos = (PVector) ((Bug)PTS.get(i)).loc;
-    
-    // get the distance
-    float d2 = PVector.dist(TESTPT, testPos);
-    // ask the question
-    if(d2 < distClosest && TESTPT != testPos){
-      // update the closest distance
-      distClosest = d2;
-      // remember the closest pos
-      theClosestBug = (Bug)PTS.get(i);
+  // A function that returns the closest point from a set
+  Bug getClosestBug(PVector TESTPT, ArrayList PTS) {
+  
+    // some impossibly high distance (ie something is always closer)
+    float distClosest = 999999;
+    // the closest point
+    Bug theClosestBug = null;
+    // Loop to find the closest point
+    //print("PTS.size() = "+PTS.size());
+    for(int i = PTS.size()-1; i >= 0; i--){
+      // get a object
+      PVector testPos = (PVector) ((Bug)PTS.get(i)).loc;
+      
+      // get the distance
+      float d2 = PVector.dist(TESTPT, testPos);
+      // ask the question
+      if(d2 < distClosest && TESTPT != testPos){
+        // update the closest distance
+        distClosest = d2;
+        // remember the closest pos
+        theClosestBug = (Bug)PTS.get(i);
+      }
     }
+  
+    // return the closest point
+    //print(theClosestBug);
+    return theClosestBug;
+  
   }
-
-  // return the closest point
-  //print(theClosestBug);
-  return theClosestBug;
-
-}
 
 }
 
