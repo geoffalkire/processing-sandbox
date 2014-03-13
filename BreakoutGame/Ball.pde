@@ -13,6 +13,26 @@ public class Ball
     setInitialVelocity(target);
   }
   
+  public float getTop()
+  {
+    return location.y - radius;
+  }
+  
+  public float getBottom()
+  {
+    return location.y + radius;
+  }
+  
+  public float getLeftSide()
+  {
+    return location.x - radius;
+  }
+  
+  public float getRightSide()
+  {
+    return location.x + radius;
+  }
+  
   private void setInitialVelocity(PVector target)
   {
       velocity = new PVector(0,0);
@@ -28,25 +48,41 @@ public class Ball
   
   public void move()
   {
-    if(!collidedWithWall() && !collidedWithPaddle())
+    if(!collided())
     {
-      // Motion 101!  Velocity changes by acceleration.  Location changes by velocity.
+      //leaving out acceleration for now, only messing with velocity
       //velocity.add(acceleration);
       //velocity.limit(topspeed);
       location.add(velocity);
     }
   }
   
+  public boolean collided()
+  {
+    return collidedWithWall() || collidedWithPaddle();
+    
+  }
+  
   public boolean collidedWithPaddle()
   {
-    //get distances between ball and paddle center
-    PVector bVect = PVector.sub(paddle.getPaddleCenter(), location);
-    
-    //calculate magnitude of the vector separating the ball and paddle center
-    float bVectMag = bVect.mag();
+    //is the ball on or in the paddle?
+    //if so, reset its position and set its velocity
+
+    if( location.y + radius > paddle.getYBorder() &&
+          paddle.getLeftSide() < location.x &&
+          paddle.getRightSide() > location.x)
+    {
+      location.y = paddle.getYBorder()-radius;
+      velocity.y *= -1;     
+      
+      //determine x velocity based on relative position to paddle center
+      
+      velocity.x = paddle.calculateBounceXDirection(ball.location);
+      return true;
+    }
     
     return false;
-    //if(bVectMag < r + 
+    
   }
   
   public boolean collidedWithWall()
@@ -70,7 +106,7 @@ public class Ball
       }
       else if(location.y > height-radius)
       {
-        location.y = height-radius*2;
+        location.y = height-radius;
         //acceleration.y *= -1;
         velocity.y *= -1;
         collisionDetected = true;
