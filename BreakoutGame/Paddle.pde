@@ -60,27 +60,25 @@ public class Paddle
   
   public float calculateBounceXDirection(PVector ballLocation)
   {
-    float sectorSize = paddleWidth / 4;
-    if(ballLocation.x > getLeftSide() && ballLocation.x < location.x + sectorSize)
-    {
-      return -4.0;
-    }
-    else if(ballLocation.x >= location.x + sectorSize && ballLocation.x < location.x)
-    {
-      return -2.0;
-    }
-    else if(ballLocation.x > location.x && ballLocation.x <= getRightSide() - sectorSize)
-    {
-      return 2.0;
-    }
-    else if(ballLocation.x > getRightSide() - sectorSize && ballLocation.x < getRightSide())
-    {
-      return 4.0;
-    }
-    else
-    {
-      return 0;
-    }
+    
+    return reboundValue(ballLocation.x);
+
+  }
+  
+  private float reboundValue(float xValue)
+  {
+    float ratio = (xValue - getLeftSide()) / (getRightSide() - getLeftSide() );
+    float range=15;
+    float increment = 1;
+    float bottomValue = -7.5;
+    
+    float reboundValue =(ratio * range) + bottomValue;
+    
+    print("ratio="+ratio+"\n");
+    print("range="+range+"\n");
+    print("rebound value="+reboundValue+"\n");
+    
+    return reboundValue;
   }
   
   public void show()
