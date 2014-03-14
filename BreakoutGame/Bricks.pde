@@ -1,17 +1,22 @@
 public class Bricks
 {
   public ArrayList<Brick> brickCollection;
-
+  
+  private float leftScreenOffset = 10;
+  private float topScreenOffset = 100;
   private float brickWidth = 80;
   private float brickHeight = 20;
 
   public Bricks()
   {
     brickCollection = new ArrayList<Brick>();
-    //create one row of 8 bricks
-    for(int i = 0; i < 12; i++)
+    //create 3 rows of 15 bricks
+    for(int i = 0; i < 15; i++)
     {
-      brickCollection.add(new Brick(brickWidth/2 + (i * (brickWidth + 5)), brickHeight/2 + 100));
+      for(int j = 0; j < 3; j++)
+      {
+        brickCollection.add(new Brick(leftScreenOffset + brickWidth/2 + (i * (brickWidth + 4)), topScreenOffset + brickHeight/2 + (j * (brickHeight + 4))));
+      }
     }
     
     //brickCollection.add(new Brick());
