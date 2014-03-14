@@ -53,6 +53,11 @@ public class Paddle
     }
   }
   
+  public void move(float x)
+  {
+    location.x = x;
+  }
+  
   public float calculateBounceXDirection(PVector ballLocation)
   {
     float sectorSize = paddleWidth / 4;

@@ -82,7 +82,6 @@ public class Brick
   
   private void initializeBrick()
   {
-    print("Brick Initialized!\n");
     brickWidth = 80;
     brickHeight = 20;
     r = random(255);
@@ -93,7 +92,6 @@ public class Brick
       location = new PVector(width/4, height/6);
       
     }
-    print("brick created with location " + location.x + "," + location.y +"\n");
   }
   
     public void show()

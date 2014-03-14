@@ -27,12 +27,17 @@ void draw()
 
 void keyPressed()
 {
-  if(keyCode == LEFT)
-  {
-    paddle.moveLeft();
-  }
-  else if(keyCode == RIGHT)
-  {
-    paddle.moveRight();
-  }
+ // if(keyCode == LEFT)
+  //{
+ //   paddle.moveLeft();
+  //}
+  //else if(keyCode == RIGHT)
+  //{
+    //paddle.moveRight();
+  //}
+}
+
+void mouseMoved()
+{
+  paddle.move(mouseX);
 }

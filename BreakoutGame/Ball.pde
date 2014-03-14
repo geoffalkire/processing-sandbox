@@ -63,6 +63,11 @@ public class Ball
     
   }
   
+  public void printLocation()
+  {
+    print("ball at " + location.x + "," + location.y + "\n");
+  }
+  
   public boolean collidedWithBrick()
   {
     boolean collisionDetected = false;
@@ -75,31 +80,31 @@ public class Ball
               location.x > currentBrick.getLeftSide() + radius &&
               location.x < currentBrick.getRightSide() - radius)//collided with the brick
       {
-        print("ball at " + location.x + "," + location.y + "\n");
-        print("brick top left right bottom at " + currentBrick.getTopSide() + "," + currentBrick.getLeftSide() + "," + currentBrick.getRightSide() + "," + currentBrick.getBottomSide() + "\n");
         
-        if(location.x < currentBrick.getLeftSide() )
+        //print("brick top left right bottom at " + currentBrick.getTopSide() + "," + currentBrick.getLeftSide() + "," + currentBrick.getRightSide() + "," + currentBrick.getBottomSide() + "\n");
+        
+        if(location.x <= currentBrick.getLeftSide() )
         {
           print("collided with left side of brick!\n");
           currentBrick.collided();
           location.x = currentBrick.getLeftSide() - radius;
           velocity.x *= -1;
         }
-        else if(location.x > currentBrick.getRightSide())
+        else if(location.x >= currentBrick.getRightSide())
         {
           print("collided with right side of brick!\n");
           currentBrick.collided();
           location.x = currentBrick.getRightSide() + radius;
           velocity.x *= -1;
         }
-        else if(location.y < currentBrick.getTopSide())
+        else if(location.y <= currentBrick.getTopSide())
         {
           print("collided with top of brick!\n");
           currentBrick.collided();
           location.y = currentBrick.getTopSide() - radius;
           velocity.y *= -1;
         }
-        else if(location.y > currentBrick.getBottomSide())
+        else if(location.y >= currentBrick.getBottomSide())
         {
           print("collided with bottom of brick!\n");
           currentBrick.collided();
