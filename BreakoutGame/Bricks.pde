@@ -12,7 +12,7 @@ public class Bricks
     brickCollection = new ArrayList<Brick>();
     //create 3 rows of 15 bricks
     for(int i = 0; i < 15; i++)
-    {
+   {
       for(int j = 0; j < 3; j++)
       {
         brickCollection.add(new Brick(leftScreenOffset + brickWidth/2 + (i * (brickWidth + 4)), topScreenOffset + brickHeight/2 + (j * (brickHeight + 4))));

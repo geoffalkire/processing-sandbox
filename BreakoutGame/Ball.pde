@@ -75,42 +75,43 @@ public class Ball
     {
       Brick currentBrick = (Brick)bricks.brickCollection.get(i);
       
-      if(location.y > currentBrick.getTopSide()-radius &&
-              location.y < currentBrick.getBottomSide() + radius &&
-              location.x > currentBrick.getLeftSide() + radius &&
-              location.x < currentBrick.getRightSide() - radius)//collided with the brick
+      if(location.y >= currentBrick.getTopSide()-radius &&
+              location.y <= currentBrick.getBottomSide() + radius &&
+              location.x + radius >= currentBrick.getLeftSide() &&
+              location.x - radius <= currentBrick.getRightSide())//collided with the brick
       {
         
         //print("brick top left right bottom at " + currentBrick.getTopSide() + "," + currentBrick.getLeftSide() + "," + currentBrick.getRightSide() + "," + currentBrick.getBottomSide() + "\n");
         
-        if(location.x <= currentBrick.getLeftSide() )
+        if(location.x <= currentBrick.getLeftSide() )//hit left side
         {
           print("collided with left side of brick!\n");
           currentBrick.collided();
           location.x = currentBrick.getLeftSide() - radius;
           velocity.x *= -1;
         }
-        else if(location.x >= currentBrick.getRightSide())
+        else if(location.x >= currentBrick.getRightSide())//hit right side
         {
           print("collided with right side of brick!\n");
           currentBrick.collided();
           location.x = currentBrick.getRightSide() + radius;
           velocity.x *= -1;
         }
-        else if(location.y <= currentBrick.getTopSide())
+        else if(location.y <= currentBrick.getTopSide())//hit top side
         {
           print("collided with top of brick!\n");
           currentBrick.collided();
           location.y = currentBrick.getTopSide() - radius;
           velocity.y *= -1;
         }
-        else if(location.y >= currentBrick.getBottomSide())
+        else if(location.y >= currentBrick.getBottomSide())//hit bottom side
         {
           print("collided with bottom of brick!\n");
           currentBrick.collided();
           location.y = currentBrick.getBottomSide() + radius;
           velocity.y *= -1;
         }
+
         collisionDetected = true;
       }
       
