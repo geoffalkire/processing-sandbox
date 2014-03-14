@@ -3,22 +3,29 @@ public class Bug {
   //movement-related variables
   PVector velocity;
   PVector acceleration;
-  float topspeed;
+  float metabolism;
   PVector randomDir;
   PVector birthPlace;
   
   //bug stats
   public float bugHealth;
+  public float birthHealth;
+  
   float radius;
+  float growth;
   float agro;
   PVector target;
   color c;
   PVector loc;
   
-  float reproPeriod; // reproduction frequency
   float age;
   float lifespan;
   boolean isPredator;
+  
+  //reproduction modifiers
+  float birthCost;
+  float reproPeriod; // reproduction frequency
+  float litterSize;
   
 
   //Constructor for setting location of the bug initially
@@ -56,24 +63,35 @@ public class Bug {
 
     velocity = new PVector(0,0);
     age = 0;
+    growth=0;
+    radius = 1;
     if(parentBug != null)
     {
+      metabolism = modify(parentBug.metabolism);
       reproPeriod = modify(parentBug.reproPeriod);
       agro = modify(parentBug.agro);
-      radius = modify(parentBug.radius);
-      bugHealth = modify(parentBug.bugHealth);
+      //radius = modify(parentBug.radius);
+      bugHealth = modify(parentBug.birthHealth);
       lifespan = modify(parentBug.lifespan);
-      topspeed = modify(parentBug.topspeed);
+      growth = modify(parentBug.growth);
+      birthCost = modify(parentBug.birthCost);
+      litterSize = modify(parentBug.litterSize);
     }
     else
     {
-      topspeed = random(10);
-      reproPeriod = int(500+random(300))/topspeed;
+      metabolism = random(10);
+      reproPeriod = int(((500+random(300))/metabolism));
       agro = random(100);
-      radius = 1;
       bugHealth = 50+random(100);
-      lifespan = 1000+random(-500,500)/topspeed;
+      lifespan = 1000+random(-500,500)/metabolism;
+      growth=random(1)*.1*(metabolism*.02);
+      birthCost = random(bugHealth)/2;
+      litterSize = random(10);
     }
+    if (agro>75){
+    isPredator = true;
+    }
+    birthHealth = bugHealth;
   }
   
   //calculates inheritance values from parent to child
@@ -92,20 +110,29 @@ public class Bug {
   public void drive() {
     
     //bug life and energy spent
-    bugHealth-=topspeed*.1;
+    bugHealth-=metabolism*.1;
     age++;
-    if (bugHealth<=0 || age>=lifespan){
+    if (bugHealth<=0 || age>=lifespan || radius<=.01){
       //killed = true;
      die(); 
     }
+    
     checkBoundaries();
     
     reproduce();
 
     decideActions();
+    
+    grow();
       
     
   }
+  private void grow(){
+    if (age < lifespan*.1){
+    radius+= growth;
+    }
+  }
+  
   
   private void checkBoundaries()
   {
@@ -120,14 +147,14 @@ public class Bug {
   {
     // reproduce
     //print("time=" + time + " and reproPeriod =" + reproPeriod + "\n");
-    if( time % int(reproPeriod) == 0)
+    if(age % int(reproPeriod) == 0)
     {
      //reproduce with variations of self
-     int litterSize= int(random(1, 5));
-     for (int i = litterSize; i<= litterSize; i++){
+     int ls = int(round(litterSize));
+     for (int i = ls; i<= ls; i++){
        babyBugs.add(new Bug(loc.x, loc.y));
        print ("A bug reproduced!\n");
-       bugHealth -= 30;//bugHeatlh/(litterSize+1);
+       bugHealth -= birthCost;
      }
     }
   }
@@ -207,12 +234,13 @@ public class Bug {
       
       // Motion 101!  Velocity changes by acceleration.  Location changes by velocity.
       velocity.add(acceleration);
-      velocity.limit(topspeed);
+      velocity.limit(metabolism);
       loc.add(velocity);
   }
 
   public void die()
   {
+    print(this+" has died.  ");
     bugs.remove(this);
   }
 

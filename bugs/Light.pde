@@ -29,6 +29,7 @@ public class Light {
  
  public void move(){
    
+   
    float wander_offset = random(-max_wander_offset, max_wander_offset);
    wander_theta += wander_offset;
    dir = new PVector(1,1);
@@ -59,14 +60,25 @@ public class Light {
    //update location
    loc.x += cos(wander_theta);//*dir.x;
    loc.y += sin(wander_theta);//*dir.y;
-   //draw shape
    
-    stroke(4);
+   
+   
+   //draw shape
+   drawGradient(loc.x, loc.y, radius);
+   // stroke(4);
     //drawGradient(loc.x, height/2);
-    fill(255,255,200); //noFill();
-    ellipse(loc.x,loc.y,radius,radius);
+    //fill(255,255,200); //noFill();
+    //ellipse(loc.x,loc.y,radius,radius);
   }
-
+void drawGradient(float x, float y, float rad) {
+  float h = 360;//random(0, 360);
+  for (int r = int(rad); r > 0; --r) {
+    noStroke();
+    fill(h, h, h);
+    ellipse(x, y, r, r);
+    h = (h + 1) % 360;
+  }
+}
 
  
 }
