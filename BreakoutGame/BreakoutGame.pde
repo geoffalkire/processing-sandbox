@@ -2,6 +2,8 @@ Bricks bricks;
 Ball ball;
 Paddle paddle;
 
+
+
 void setup() 
 {
   frameRate(60);

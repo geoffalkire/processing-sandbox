@@ -66,50 +66,56 @@ public class Ball
   public boolean collidedWithBrick()
   {
     boolean collisionDetected = false;
-//    for(int i = bricks.brickCollection.size() - 1; i >=0; i--)
-//    {
-//      Brick currentBrick = (Brick)bricks.brickCollection.get(i);
-//    
-//      if(location.x > currentBrick.getLeftSide() - radius && //hit left side
-//          location.y > currentBrick.getTopSide() && //is under top side
-//          location.y < currentBrick.getBottomSide())//is above bottom side
-//      {
-//        location.x = currentBrick.getLeftSide() - radius;
-//        velocity.x *= -1;
-//        collisionDetected = true;
-//      }
-//      else if(location.x < currentBrick.getRightSide() + radius &&//collided with right side of brick
-//              location.y > currentBrick.getTopSide() && //is under top side
-//              location.y < currentBrick.getBottomSide())//is above bottom side
-//      {
-//        location.x = currentBrick.getRightSide() + radius;
-//        velocity.x *= -1;
-//        collisionDetected = true;
-//      }
-//     else if(location.y > height-radius)//collided with bottom of screen
-//      {
-//        location.y = height-radius;
-//        //acceleration.y *= -1;
-//        velocity.y *= -1;
-//        collisionDetected = true;
-//      }
-//      else if(location.y < radius)//collided with top of screen
-//      {
-//        location.y = radius;
-        //acceleration.y *= -1;
-//        velocity.y *= -1;
-        //location.add(velocity);
-//        collisionDetected = true;
-//      }
+    for(int i = bricks.brickCollection.size() - 1; i >=0; i--)
+    {
+      Brick currentBrick = (Brick)bricks.brickCollection.get(i);
       
-//      return collisionDetected;
+      if(location.y > currentBrick.getTopSide()-radius &&
+              location.y < currentBrick.getBottomSide() + radius &&
+              location.x > currentBrick.getLeftSide() + radius &&
+              location.x < currentBrick.getRightSide() - radius)//collided with the brick
+      {
+        print("ball at " + location.x + "," + location.y + "\n");
+        print("brick top left right bottom at " + currentBrick.getTopSide() + "," + currentBrick.getLeftSide() + "," + currentBrick.getRightSide() + "," + currentBrick.getBottomSide() + "\n");
+        
+        if(location.x < currentBrick.getLeftSide() )
+        {
+          print("collided with left side of brick!\n");
+          currentBrick.collided();
+          location.x = currentBrick.getLeftSide() - radius;
+          velocity.x *= -1;
+        }
+        else if(location.x > currentBrick.getRightSide())
+        {
+          print("collided with right side of brick!\n");
+          currentBrick.collided();
+          location.x = currentBrick.getRightSide() + radius;
+          velocity.x *= -1;
+        }
+        else if(location.y < currentBrick.getTopSide())
+        {
+          print("collided with top of brick!\n");
+          currentBrick.collided();
+          location.y = currentBrick.getTopSide() - radius;
+          velocity.y *= -1;
+        }
+        else if(location.y > currentBrick.getBottomSide())
+        {
+          print("collided with bottom of brick!\n");
+          currentBrick.collided();
+          location.y = currentBrick.getBottomSide() + radius;
+          velocity.y *= -1;
+        }
+        collisionDetected = true;
+      }
       
-      //check for collisions from the top, bottom, and sides of brick
-//    }
-    
-    return false;
-    //is the ball on or in the brick?
-    //if so, reset its position and set its velocity
+      if(collisionDetected)
+      {
+        break;
+      }
+      
+    } 
+    return collisionDetected;
   }
   
   public boolean collidedWithPaddle()

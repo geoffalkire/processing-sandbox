@@ -10,11 +10,7 @@ public class Paddle
   {
     initializePaddle();
   }
-  
-  public PVector getCenter()
-  {
-    return new PVector(location.x-paddleWidth/2, location.y-paddleHeight/2);
-  }
+ 
   
   
   public float getYBorder()
@@ -36,7 +32,7 @@ public class Paddle
   private void initializePaddle()
   {
     paddleWidth = 100;
-    paddleHeight = 50;
+    paddleHeight = 10;
 
     location = new PVector(width/2, height-paddleHeight/2);
   }
@@ -60,15 +56,15 @@ public class Paddle
   public float calculateBounceXDirection(PVector ballLocation)
   {
     float sectorSize = paddleWidth / 4;
-    if(ballLocation.x > getLeftSide() && ballLocation.x < getCenter().x + sectorSize)
+    if(ballLocation.x > getLeftSide() && ballLocation.x < location.x + sectorSize)
     {
       return -4.0;
     }
-    else if(ballLocation.x >= getCenter().x + sectorSize && ballLocation.x < getCenter().x)
+    else if(ballLocation.x >= location.x + sectorSize && ballLocation.x < location.x)
     {
       return -2.0;
     }
-    else if(ballLocation.x > getCenter().x && ballLocation.x <= getRightSide() - sectorSize)
+    else if(ballLocation.x > location.x && ballLocation.x <= getRightSide() - sectorSize)
     {
       return 2.0;
     }
@@ -86,7 +82,7 @@ public class Paddle
   {
     noStroke();
     fill(222,222,131);
-    rect(location.x-paddleWidth/2,location.y,paddleWidth,paddleHeight,2);
+    rect(location.x-paddleWidth/2,location.y-paddleHeight/2,paddleWidth,paddleHeight,2);
     //print("drew paddle at " + location.x + "," + location.y + "\n");
   }
 }
