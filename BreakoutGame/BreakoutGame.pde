@@ -8,6 +8,9 @@ void setup()
 {
   frameRate(60);
   size(1280,720);
+  
+  noCursor();
+  
   bricks = new Bricks();
   
   paddle = new Paddle();
