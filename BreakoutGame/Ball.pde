@@ -178,6 +178,12 @@ public class Ball
         location.y = radius;
         //acceleration.y *= -1;
         velocity.y *= -1;
+        
+        if(velocity.mag() <= 12)
+        {
+          velocity.mult(1.1);
+        }
+        print("velocity magnitude = " + velocity.mag() + "\n");
         //location.add(velocity);
         collisionDetected = true;
       }
