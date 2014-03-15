@@ -9,6 +9,7 @@ public class Bug {
   
   //bug stats
   public float bugHealth;
+  public float bugMaxHealth;
   public float birthHealth;
   public float offense;
   public float defense;
@@ -79,6 +80,7 @@ public class Bug {
       agro = modify(parentBug.agro);
       //radius = modify(parentBug.radius);
       bugHealth = modify(parentBug.birthHealth);
+      bugMaxHealth =  modify(parentBug.bugMaxHealth);
       lifespan = modify(parentBug.lifespan);
       growth = modify(parentBug.growth);
       birthCost = modify(parentBug.birthCost);
@@ -90,16 +92,18 @@ public class Bug {
     else
     {
       metabolism = random(10);
-      reproPeriod = int(((500+random(300))/metabolism));
+      reproPeriod = int(((500+random(300))/(metabolism*.5)));
       agro = random(100);
-      bugHealth = 50+random(100);
-      lifespan = 1000+random(-500,500)/metabolism;
+      
+      lifespan = (1000+random(1000));
       growth=random(1)*.1*(metabolism*.02);
       birthCost = random(bugHealth)/2;
-      litterSize = random(10);
+      litterSize = random(1,4);
       offense = random(100);
       defense = random(100);
       bugColor = color(random(255),random(255),random(255));
+      bugMaxHealth = 100+random(100);
+      bugHealth = random(bugMaxHealth);
     }
     if (agro>75){
     isPredator = true;
@@ -122,7 +126,9 @@ public class Bug {
 
 
   public void drive() {
-    
+    if (bugHealth> bugMaxHealth){
+      bugHealth = bugMaxHealth;
+    }
     //bug life and energy spent
     bugHealth-=metabolism*.1;
     age++;
@@ -262,11 +268,15 @@ public class Bug {
       //compare bugs size.  larger bug will win likely win
       //float attackRatio = offense - targetBug.defense;
       //absorb the bug's health based on agro
-      float bugAttackOutcome = offense * agro;
+      float bugAttackOutcome = offense * agro/targetBug.defense;
       
-      bugHealth +=bugAttackOutcome;
+      bugHealth +=bugAttackOutcome/2;
+      
+      print ("bugAttackOutcome is "+bugAttackOutcome);
+      print ("targetBug.bugHealth is "+targetBug.bugHealth);
+      
       //hurt the target more. loss of energy overall.
-      targetBug.bugHealth-=bugAttackOutcome;
+      targetBug.bugHealth-=bugAttackOutcome*4;
     }
   }
   
@@ -314,7 +324,7 @@ public class Bug {
       float d2 = PVector.dist(huntPos, preyPos);
       
       // ask the question
-      if(d2 < distClosest && hunter != prey && hunter.offense>prey.defense){
+      if(d2 < distClosest && hunter != prey){ // && hunter.offense>prey.defense
         // update the closest distance
         distClosest = d2;
         // remember the closest pos
