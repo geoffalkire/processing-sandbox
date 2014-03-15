@@ -27,7 +27,7 @@ void setup() {
 
 void draw() {
   time++;
-  background(30,0,70);
+  background(0,0,0);
   
   light.move();
   //light.checkBoundaryCollision();

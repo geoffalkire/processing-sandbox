@@ -71,12 +71,12 @@ public class Light {
     //ellipse(loc.x,loc.y,radius,radius);
   }
 void drawGradient(float x, float y, float rad) {
-  float h = 360;//random(0, 360);
-  for (int r = int(rad); r > 0; --r) {
+  float h = 0;//random(0, 360);
+  for (int r = int(rad); r >= 0; --r) {
     noStroke();
     fill(h, h, h);
     ellipse(x, y, r, r);
-    h = (h + 1) % 360;
+    h = (h + 1) % 255;
   }
 }
 
