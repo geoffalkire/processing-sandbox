@@ -10,12 +10,16 @@ public class Bug {
   //bug stats
   public float bugHealth;
   public float birthHealth;
+  public float offense;
+  public float defense;
+  color bugColor;
+  
   
   float radius;
+  float maxRadius;
   float growth;
   float agro;
   PVector target;
-  color c;
   PVector loc;
   
   float age;
@@ -26,6 +30,7 @@ public class Bug {
   float birthCost;
   float reproPeriod; // reproduction frequency
   float litterSize;
+  
   
 
   //Constructor for setting location of the bug initially
@@ -64,7 +69,8 @@ public class Bug {
     velocity = new PVector(0,0);
     age = 0;
     growth=0;
-    radius = 1;
+    radius=1;
+    
     if(parentBug != null)
     {
       metabolism = modify(parentBug.metabolism);
@@ -76,6 +82,9 @@ public class Bug {
       growth = modify(parentBug.growth);
       birthCost = modify(parentBug.birthCost);
       litterSize = modify(parentBug.litterSize);
+      offense = modify(parentBug.offense);
+      defense = modify(parentBug.defense);
+      bugColor = parentBug.bugColor;
     }
     else
     {
@@ -87,11 +96,15 @@ public class Bug {
       growth=random(1)*.1*(metabolism*.02);
       birthCost = random(bugHealth)/2;
       litterSize = random(10);
+      offense = random(100);
+      defense = random(100);
+      bugColor = color(random(255),random(255),random(255));
     }
     if (agro>75){
     isPredator = true;
     }
     birthHealth = bugHealth;
+    maxRadius = (lifespan/age)*((offense + defense)/80);
   }
   
   //calculates inheritance values from parent to child
@@ -101,8 +114,8 @@ public class Bug {
 
   public void display() {
     noStroke();
-    fill(agro*4,bugHealth,0);
-    
+    //fill(agro*4,bugHealth,0);
+    fill(bugColor);
     ellipse(loc.x,loc.y,radius,radius);
   }
 
@@ -128,7 +141,7 @@ public class Bug {
     
   }
   private void grow(){
-    if (age < lifespan*.1){
+    if (age < lifespan*.1 && radius<maxRadius){
     radius+= growth;
     }
   }
@@ -152,7 +165,7 @@ public class Bug {
      //reproduce with variations of self
      int ls = int(round(litterSize));
      for (int i = ls; i<= ls; i++){
-       babyBugs.add(new Bug(loc.x, loc.y));
+       babyBugs.add(new Bug(loc.x+random(-10,10), loc.y+random(-10,10)));
        print ("A bug reproduced!\n");
        bugHealth -= birthCost;
      }
@@ -165,7 +178,7 @@ public class Bug {
       if (isPredator){
           //look for near by things to eat.
           //target = new PVector(mouseX,mouseY);
-         Bug targetBug = getClosestBug(loc, bugs);
+         Bug targetBug = getClosestBug(this, bugs);
          
          
          if(targetBug != null)
@@ -213,10 +226,14 @@ public class Bug {
     float d = loc.dist(targetBug.loc);
     if(d < radius && radius < 10)
     {
+      //compare bugs size.  larger bug will win likely win
+      //float attackRatio = offense - targetBug.defense;
       //absorb the bug's health based on agro
-      bugHealth += agro*2;
+      float bugAttackOutcome = offense * agro;
+      
+      bugHealth +=bugAttackOutcome;
       //hurt the target more. loss of energy overall.
-      targetBug.bugHealth-=agro*4;
+      targetBug.bugHealth-=bugAttackOutcome;
     }
   }
   
@@ -246,7 +263,7 @@ public class Bug {
 
 
   // A function that returns the closest point from a set
-  Bug getClosestBug(PVector TESTPT, ArrayList PTS) {
+  Bug getClosestBug(Bug hunter, ArrayList preyList) {
   
     // some impossibly high distance (ie something is always closer)
     float distClosest = 999999;
@@ -254,18 +271,21 @@ public class Bug {
     Bug theClosestBug = null;
     // Loop to find the closest point
     //print("PTS.size() = "+PTS.size());
-    for(int i = PTS.size()-1; i >= 0; i--){
-      // get a object
-      PVector testPos = (PVector) ((Bug)PTS.get(i)).loc;
+    for(int i = preyList.size()-1; i >= 0; i--){
+      // get the prey
+      Bug prey = (Bug)preyList.get(i);
+      PVector huntPos = hunter.loc;
+      PVector preyPos = prey.loc;
       
       // get the distance
-      float d2 = PVector.dist(TESTPT, testPos);
+      float d2 = PVector.dist(huntPos, preyPos);
+      
       // ask the question
-      if(d2 < distClosest && TESTPT != testPos){
+      if(d2 < distClosest && hunter != prey && hunter.offense>prey.defense){
         // update the closest distance
         distClosest = d2;
         // remember the closest pos
-        theClosestBug = (Bug)PTS.get(i);
+        theClosestBug = prey;
       }
     }
   

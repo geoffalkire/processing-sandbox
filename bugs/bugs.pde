@@ -1,4 +1,4 @@
-int bugCount = 25;
+int bugCount = 100;
 ArrayList<Bug> bugs;
 ArrayList<Bug> babyBugs;
 ArrayList<BugHive> bugHives;
@@ -54,7 +54,7 @@ void draw() {
   for (int i = babyBugs.size()-1; i >= 0; i--) {
   babyBugs.remove(i);
   }
-  
+  print("There are "+bugs.size()+" bugs");
 }
 
 void mouseClicked()
