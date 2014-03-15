@@ -14,7 +14,7 @@ public class Bug {
   public float defense;
   color bugColor;
   
-  
+  float originalRadius;
   float radius;
   float maxRadius;
   float growth;
@@ -70,6 +70,7 @@ public class Bug {
     age = 0;
     growth=0;
     radius=1;
+    originalRadius = radius;
     
     if(parentBug != null)
     {
@@ -156,21 +157,53 @@ public class Bug {
     }
   }
   
+  private boolean _isBirthing = false;
+  private boolean _isBirthingAnimationFinished = false;
+  private int _birthingFrameCount = 0;
   private void reproduce()
   {
-    // reproduce
-    //print("time=" + time + " and reproPeriod =" + reproPeriod + "\n");
     if(age % int(reproPeriod) == 0)
     {
+      _isBirthing = true;
+    }
+    // reproduce
+    //print("time=" + time + " and reproPeriod =" + reproPeriod + "\n");
+    if(_isBirthing)
+    {
+      //show animation based on frame count since start of animation
+      showBirthingAnimation();
+      
      //reproduce with variations of self
-     int ls = int(round(litterSize));
-     for (int i = ls; i<= ls; i++){
-       babyBugs.add(new Bug(loc.x+random(-10,10), loc.y+random(-10,10)));
-       print ("A bug reproduced!\n");
-       bugHealth -= birthCost;
+     if(_isBirthingAnimationFinished)
+     {
+       int ls = int(round(litterSize));
+       for (int i = ls; i<= ls; i++){
+         babyBugs.add(new Bug(loc.x+random(-10,10), loc.y+random(-10,10)));
+         print ("A bug reproduced!\n");
+         bugHealth -= birthCost;
+       }
      }
     }
   }
+  
+
+  private void showBirthingAnimation()
+  {
+    if(_birthingFrameCount < 5)
+    {
+      radius+=2;
+      _birthingFrameCount++;
+    }
+    else
+    {
+      radius = originalRadius;
+      _isBirthingAnimationFinished = true;
+      _isBirthing = false;
+      _birthingFrameCount = 0;
+    }
+  }
+  
+ 
   
   private void decideActions()
   {
