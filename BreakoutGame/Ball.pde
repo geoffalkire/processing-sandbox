@@ -48,18 +48,20 @@ public class Ball
   
   public void move()
   {
-    if(!collided())
-    {
+    reactToCollisions();
+
       //leaving out acceleration for now, only messing with velocity
       //velocity.add(acceleration);
       //velocity.limit(topspeed);
       location.add(velocity);
-    }
+
   }
   
-  public boolean collided()
+  public void reactToCollisions()
   {
-    return collidedWithWall() || collidedWithPaddle() || collidedWithBrick();
+    collidedWithWall();
+    collidedWithPaddle();
+    collidedWithBrick();
     
   }
   
@@ -75,36 +77,39 @@ public class Ball
     {
       Brick currentBrick = (Brick)bricks.brickCollection.get(i);
       
-      if(location.y >= currentBrick.getTopSide()-radius &&
-              location.y <= currentBrick.getBottomSide() + radius &&
-              location.x + radius >= currentBrick.getLeftSide() &&
-              location.x - radius <= currentBrick.getRightSide())//collided with the brick
+      if(location.y > currentBrick.getTopSide()-radius &&
+              location.y < currentBrick.getBottomSide() + radius &&
+              location.x + radius > currentBrick.getLeftSide() &&
+              location.x - radius < currentBrick.getRightSide())//collided with the brick
       {
         
         //print("brick top left right bottom at " + currentBrick.getTopSide() + "," + currentBrick.getLeftSide() + "," + currentBrick.getRightSide() + "," + currentBrick.getBottomSide() + "\n");
         
-        if(location.x <= currentBrick.getLeftSide() )//hit left side
+        if(location.x < currentBrick.getLeftSide() )//hit left side
         {
           print("collided with left side of brick!\n");
           currentBrick.collided();
           location.x = currentBrick.getLeftSide() - radius;
           velocity.x *= -1;
         }
-        else if(location.x >= currentBrick.getRightSide())//hit right side
+        else if(location.x > currentBrick.getRightSide())//hit right side
         {
           print("collided with right side of brick!\n");
           currentBrick.collided();
           location.x = currentBrick.getRightSide() + radius;
           velocity.x *= -1;
         }
-        else if(location.y <= currentBrick.getTopSide())//hit top side
+        else if(location.y < currentBrick.getTopSide())//hit top side
         {
           print("collided with top of brick!\n");
+          print("ball's location: " + location.x + "," + location.y + "\n");
           currentBrick.collided();
           location.y = currentBrick.getTopSide() - radius;
           velocity.y *= -1;
+          print("ball's new velocity: " + velocity.x + "," + velocity.y + "\n");
+          print("resetting ball's location to: " +location.x + "," + location.y + "\n");
         }
-        else if(location.y >= currentBrick.getBottomSide())//hit bottom side
+        else if(location.y > currentBrick.getBottomSide())//hit bottom side
         {
           print("collided with bottom of brick!\n");
           currentBrick.collided();
@@ -139,6 +144,12 @@ public class Ball
       //determine x velocity based on relative position to paddle center
       
       velocity.x = paddle.calculateBounceXDirection(ball.location);
+      
+              if(velocity.mag() <= 10)
+        {
+          velocity.mult(1.1);
+        }
+        print("velocity magnitude = " + velocity.mag() + "\n");
       return true;
     }
     
@@ -168,10 +179,12 @@ public class Ball
       }
       else if(location.y > height-radius)//collided with bottom of screen
       {
-        location.y = height-radius;
+        //location.y = height-radius;
         //acceleration.y *= -1;
-        velocity.y *= -1;
-        collisionDetected = true;
+        //velocity.y *= -1;
+        //collisionDetected = true;
+        
+        //should put logic for player losing game
       }
       else if(location.y < radius)//collided with top of screen
       {
@@ -179,11 +192,7 @@ public class Ball
         //acceleration.y *= -1;
         velocity.y *= -1;
         
-        if(velocity.mag() <= 12)
-        {
-          velocity.mult(1.1);
-        }
-        print("velocity magnitude = " + velocity.mag() + "\n");
+
         //location.add(velocity);
         collisionDetected = true;
       }
