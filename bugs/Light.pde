@@ -64,11 +64,13 @@ public class Light {
    
    
    //draw shape
-   drawGradient(loc.x, loc.y, radius);
-   // stroke(4);
+   //drawGradient(loc.x, loc.y, radius);
+   strokeWeight(1);
+   stroke(255, 255, 255, 25);
     //drawGradient(loc.x, height/2);
-    //fill(255,255,200); //noFill();
-    //ellipse(loc.x,loc.y,radius,radius);
+    //fill(255,255,200); 
+    noFill();
+    ellipse(loc.x,loc.y,radius/3,radius/3);
   }
 void drawGradient(float x, float y, float rad) {
   float h = 0;//random(0, 360);

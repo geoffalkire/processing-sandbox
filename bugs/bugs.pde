@@ -1,4 +1,4 @@
-int bugCount = 25;
+int bugCount = 100;
 ArrayList<Bug> bugs;
 ArrayList<Bug> babyBugs;
 ArrayList<BugHive> bugHives;
@@ -9,8 +9,10 @@ public int time = 0;
 
 
 void setup() {
-  frameRate(60);
+  frameRate(120);
   size(1280,720);
+  background(0,0,0);
+  
   ellipseMode(RADIUS);
   
   light = new Light();
@@ -27,7 +29,9 @@ void setup() {
 
 void draw() {
   time++;
-  background(0,0,0);
+  fill(0,0,0,25);
+  rect(0,0,width,height);
+  
   
   light.move();
   //light.checkBoundaryCollision();
@@ -36,6 +40,8 @@ void draw() {
     Bug bug = bugs.get(i);
     bug.drive();
     bug.display();   
+    
+   // saveFrame("images/test-######.png");
    }
 
   

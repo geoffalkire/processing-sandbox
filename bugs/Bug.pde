@@ -22,6 +22,7 @@ public class Bug {
   float agro;
   PVector target;
   PVector loc;
+  PVector locMod;
   
   float age;
   float lifespan;
@@ -51,15 +52,6 @@ public class Bug {
   //Constructor for inheriting traits of parent bug
    public Bug(Bug parentBug) 
    {
-   
-     //randomDir = new PVector(random(width),random(height));
-     
-     birthPlace = new PVector(parentBug.loc.x,parentBug.loc.y);
-     birthPlace.normalize();
-     birthPlace.mult(parentBug.radius);
-     
-     
-     loc = new PVector(birthPlace.x,birthPlace.y);
      Initialize(parentBug);
    }
   
@@ -76,6 +68,9 @@ public class Bug {
     if(parentBug != null)
     {
       metabolism = modify(parentBug.metabolism);
+      loc = parentBug.loc;
+      locMod =  new PVector(random(-10,10), random(-10,10));
+      loc.add(locMod);
       reproPeriod = modify(parentBug.reproPeriod);
       agro = modify(parentBug.agro);
       //radius = modify(parentBug.radius);
@@ -94,7 +89,6 @@ public class Bug {
       metabolism = random(10);
       reproPeriod = int(((500+random(300))/(metabolism*.5)));
       agro = random(100);
-      
       lifespan = (1000+random(1000));
       growth=random(1)*.1*(metabolism*.02);
       birthCost = random(bugHealth)/2;
@@ -105,7 +99,7 @@ public class Bug {
       bugMaxHealth = 100+random(100);
       bugHealth = random(bugMaxHealth);
     }
-    if (agro>75){
+    if (agro>50){
     isPredator = true;
     }
     birthHealth = bugHealth;
@@ -114,7 +108,7 @@ public class Bug {
   
   //calculates inheritance values from parent to child
   public float modify(float val){
-   return val+= random(val*.1)*random(-1,1);
+   return val+= random(val*.01)*random(-1,1);
   }
 
   public void display() {
@@ -184,8 +178,8 @@ public class Bug {
      {
        int ls = int(round(litterSize));
        for (int i = ls; i<= ls; i++){
-         babyBugs.add(new Bug(loc.x+random(-10,10), loc.y+random(-10,10)));
-         print ("A bug reproduced!\n");
+         babyBugs.add(new Bug(this));
+         //print ("A bug reproduced!\n");
          bugHealth -= birthCost;
        }
      }
@@ -197,7 +191,7 @@ public class Bug {
   {
     if(_birthingFrameCount < 5)
     {
-      radius+=2;
+      radius+=1;
       _birthingFrameCount++;
     }
     else
@@ -270,13 +264,13 @@ public class Bug {
       //absorb the bug's health based on agro
       float bugAttackOutcome = offense * agro/targetBug.defense;
       
-      bugHealth +=bugAttackOutcome/2;
+      bugHealth +=bugAttackOutcome;
       
-      print ("bugAttackOutcome is "+bugAttackOutcome);
-      print ("targetBug.bugHealth is "+targetBug.bugHealth);
+      //print ("bugAttackOutcome is "+bugAttackOutcome);
+      //print ("targetBug.bugHealth is "+targetBug.bugHealth);
       
       //hurt the target more. loss of energy overall.
-      targetBug.bugHealth-=bugAttackOutcome*4;
+      targetBug.bugHealth-=bugAttackOutcome*8;
     }
   }
   
@@ -300,7 +294,7 @@ public class Bug {
 
   public void die()
   {
-    print(this+" has died.  ");
+    //print(this+" has died.  ");
     bugs.remove(this);
   }
 
