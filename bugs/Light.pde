@@ -4,35 +4,49 @@ public class Light {
   private float spread;
   private float wander_theta;
   private float radius;
+  private int lightRespawn;
   // bigger = more edgier, hectic
    
   private float max_wander_offset = 0.3;
   // bigger = faster turns
-  private float max_radius = 3.5;
+  //private float max_radius = 3.5;
   
+  /*
+  radius = random(100);
+     loc = new PVector(mx,my)
+  */
   
   float mx;
   float my;
  
    public Light(){
     //print("light constructed");
-
+  
     this.spread = 200;
     wander_theta = random(TWO_PI);
-    radius = spread/2;
+    radius = (spread/2);
    
     mx = constrain(random(width), radius, width-radius);
     my = constrain(random(height), radius, height-radius);
     loc = new PVector(mx,my);
+    
+    lightRespawn = 4000;
+    
    }
 
  
  public void move(){
    
+   if ( time%lightRespawn==0){
+     light = new Light();
+     
+     
+   }
    
+   radius+= sin(time/10);
    float wander_offset = random(-max_wander_offset, max_wander_offset);
    wander_theta += wander_offset;
-   dir = new PVector(1,1);
+   //dir = new PVector(1,1);
    
    //check boundaries
     if (loc.x > width-radius) {

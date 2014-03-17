@@ -24,7 +24,7 @@ public class Bug {
   PVector loc;
   PVector locMod;
   
-  float age;
+  int age;
   float lifespan;
   boolean isPredator;
   
@@ -79,7 +79,7 @@ public class Bug {
       lifespan = modify(parentBug.lifespan);
       growth = modify(parentBug.growth);
       birthCost = modify(parentBug.birthCost);
-      litterSize = modify(parentBug.litterSize);
+      litterSize = 1;//modify(parentBug.litterSize);
       offense = modify(parentBug.offense);
       defense = modify(parentBug.defense);
       bugColor = parentBug.bugColor;
@@ -87,16 +87,16 @@ public class Bug {
     else
     {
       metabolism = random(10);
-      reproPeriod = int(((500+random(300))/(metabolism*.5)));
+      reproPeriod = int(2000+random(300));
       agro = random(100);
-      lifespan = (1000+random(1000));
+      lifespan = (4000+random(2000));
       growth=random(1)*.1*(metabolism*.02);
       birthCost = random(bugHealth)/2;
       litterSize = random(1,4);
       offense = random(100);
       defense = random(100);
       bugColor = color(random(255),random(255),random(255));
-      bugMaxHealth = 100+random(100);
+      bugMaxHealth = 1000+random(100);
       bugHealth = random(bugMaxHealth);
     }
     if (agro>50){
@@ -108,7 +108,7 @@ public class Bug {
   
   //calculates inheritance values from parent to child
   public float modify(float val){
-   return val+= random(val*.01)*random(-1,1);
+   return val+= random(val*.1)*random(-1,1);
   }
 
   public void display() {
@@ -126,7 +126,7 @@ public class Bug {
     //bug life and energy spent
     bugHealth-=metabolism*.1;
     age++;
-    if (bugHealth<=0 || age>=lifespan || radius<=.01){
+    if (bugHealth<=0 || age>=lifespan/(metabolism) || radius<=.01){
       //killed = true;
      die(); 
     }
@@ -162,7 +162,7 @@ public class Bug {
   private int _birthingFrameCount = 0;
   private void reproduce()
   {
-    if(age % int(reproPeriod) == 0)
+    if(age % int(reproPeriod/(metabolism*.5)) == 0)
     {
       _isBirthing = true;
     }
@@ -262,7 +262,7 @@ public class Bug {
       //compare bugs size.  larger bug will win likely win
       //float attackRatio = offense - targetBug.defense;
       //absorb the bug's health based on agro
-      float bugAttackOutcome = offense * agro/targetBug.defense;
+      float bugAttackOutcome = 200;//offense * agro/targetBug.defense;
       
       bugHealth +=bugAttackOutcome;
       
