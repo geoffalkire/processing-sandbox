@@ -8,11 +8,11 @@ public class Bug {
   PVector birthPlace;
   
   //bug stats
-  public float bugHealth;
-  public float bugMaxHealth;
+  public float health;
+  //public float bugMaxHealth;
   public float birthHealth;
-  public float offense;
-  public float defense;
+  //public float offense;
+  //public float defense;
   color bugColor;
   
   float originalRadius;
@@ -23,6 +23,8 @@ public class Bug {
   PVector target;
   PVector loc;
   PVector locMod;
+  float turnCost;
+  
   
   int age;
   float lifespan;
@@ -74,75 +76,78 @@ public class Bug {
       reproPeriod = modify(parentBug.reproPeriod);
       agro = modify(parentBug.agro);
       //radius = modify(parentBug.radius);
-      bugHealth = modify(parentBug.birthHealth);
-      bugMaxHealth =  modify(parentBug.bugMaxHealth);
+      health = modify(parentBug.birthHealth);
+      //bugMaxHealth =  modify(parentBug.bugMaxHealth);
       lifespan = modify(parentBug.lifespan);
       growth = modify(parentBug.growth);
-      birthCost = modify(parentBug.birthCost);
-      litterSize = 1;//modify(parentBug.litterSize);
-      offense = modify(parentBug.offense);
-      defense = modify(parentBug.defense);
+      //birthCost = modify(parentBug.birthCost);
+      litterSize =modify(parentBug.litterSize);
+      //offense = modify(parentBug.offense);
+      //defense = modify(parentBug.defense);
       bugColor = parentBug.bugColor;
     }
     else
     {
       metabolism = random(10);
-      reproPeriod = int(2000+random(300));
+      reproPeriod = int(1000+(randomGaussian()*100));
       agro = random(100);
-      lifespan = (4000+random(2000));
+      lifespan = (3000+random(2000));
       growth=random(1)*.1*(metabolism*.02);
-      birthCost = random(bugHealth)/2;
+      //birthCost = random(health)/2;
       litterSize = random(1,4);
-      offense = random(100);
-      defense = random(100);
+      //offense = random(100);
+      //defense = random(100);
       bugColor = color(random(255),random(255),random(255));
-      bugMaxHealth = 1000+random(100);
-      bugHealth = random(bugMaxHealth);
+      //bugMaxHealth = 1000+random(100);
+      health = random(100);//random(bugMaxHealth);
     }
-    if (agro>50){
-    isPredator = true;
+    if (agro>75){
+      isPredator = true;
     }
-    birthHealth = bugHealth;
-    maxRadius = (lifespan/age)*((offense + defense)/80);
+    birthHealth = health;
+    maxRadius = 20;//(lifespan/age)*((offense + defense)/80);
+    if(reproPeriod<24){
+      reproPeriod=24;
+    }
+    
   }
   
   //calculates inheritance values from parent to child
   public float modify(float val){
-   return val+= random(val*.1)*random(-1,1);
+   //return val+= random(val*.1)*random(-1,1);
+   return val+= randomGaussian()*(val*.1);
   }
 
   public void display() {
     noStroke();
-    //fill(agro*4,bugHealth,0);
+    //fill(agro*4,health,0);
     fill(bugColor);
     ellipse(loc.x,loc.y,radius,radius);
   }
 
 
   public void drive() {
-    if (bugHealth> bugMaxHealth){
-      bugHealth = bugMaxHealth;
-    }
+    /*if (health> bugMaxHealth){
+      health = bugMaxHealth;
+    }*/
     //bug life and energy spent
-    bugHealth-=metabolism*.1;
+    turnCost = metabolism*.05;
+    health-= turnCost;
     age++;
-    if (bugHealth<=0 || age>=lifespan/(metabolism) || radius<=.01){
+    if (health<=0 || age>=lifespan/(metabolism) || radius<=.01){
       //killed = true;
      die(); 
     }
     
     checkBoundaries();
-    
     reproduce();
-
     decideActions();
-    
     grow();
       
     
   }
   private void grow(){
-    if (age < lifespan*.1 && radius<maxRadius){
+    if (age < lifespan*.1){
     radius+= growth;
     }
   }
@@ -180,7 +185,7 @@ public class Bug {
        for (int i = ls; i<= ls; i++){
          babyBugs.add(new Bug(this));
          //print ("A bug reproduced!\n");
-         bugHealth -= birthCost;
+         //health -= birthCost;
        }
      }
     }
@@ -249,7 +254,7 @@ public class Bug {
     if (d < (light.radius+radius))
     {
      //heal
-     bugHealth++;
+     health++;
     }
   }
   
@@ -257,20 +262,20 @@ public class Bug {
   {
     //if the other bug is within our radius, eat it
     float d = loc.dist(targetBug.loc);
-    if(d < radius && radius < 10)
+    if(d < radius*1.2)
     {
       //compare bugs size.  larger bug will win likely win
       //float attackRatio = offense - targetBug.defense;
       //absorb the bug's health based on agro
-      float bugAttackOutcome = 200;//offense * agro/targetBug.defense;
+      //float bugAttackOutcome = targetBug.health;//offense * agro/targetBug.defense;
       
-      bugHealth +=bugAttackOutcome;
+      health += targetBug.health*3;
       
       //print ("bugAttackOutcome is "+bugAttackOutcome);
-      //print ("targetBug.bugHealth is "+targetBug.bugHealth);
+      //print ("targetBug.health is "+targetBug.health);
       
       //hurt the target more. loss of energy overall.
-      targetBug.bugHealth-=bugAttackOutcome*8;
+      targetBug.health=0;//-=bugAttackOutcome*8;
     }
   }
   
@@ -311,18 +316,21 @@ public class Bug {
     for(int i = preyList.size()-1; i >= 0; i--){
       // get the prey
       Bug prey = (Bug)preyList.get(i);
-      PVector huntPos = hunter.loc;
-      PVector preyPos = prey.loc;
-      
-      // get the distance
-      float d2 = PVector.dist(huntPos, preyPos);
-      
-      // ask the question
-      if(d2 < distClosest && hunter != prey){ // && hunter.offense>prey.defense
-        // update the closest distance
-        distClosest = d2;
-        // remember the closest pos
-        theClosestBug = prey;
+      if (prey.agro < agro && prey.health > turnCost*10){
+        PVector huntPos = hunter.loc;
+        PVector preyPos = prey.loc;
+        
+        // get the distance
+        float d2 = PVector.dist(huntPos, preyPos);
+        
+        // ask the question
+        if(d2 < distClosest && hunter != prey){ // && hunter.offense>prey.defense
+          // update the closest distance
+          distClosest = d2;
+          // remember the closest pos
+          theClosestBug = prey;
+      }
+
       }
     }
   

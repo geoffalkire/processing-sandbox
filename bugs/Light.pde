@@ -22,7 +22,7 @@ public class Light {
    public Light(){
     //print("light constructed");
   
-    this.spread = 200;
+    this.spread = 50+abs((1+randomGaussian())*300);
     wander_theta = random(TWO_PI);
     radius = (spread/2);
    

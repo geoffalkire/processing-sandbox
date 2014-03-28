@@ -1,4 +1,4 @@
-int bugCount = 10000;
+int bugCount = 100;
 ArrayList<Bug> bugs;
 ArrayList<Bug> babyBugs;
 ArrayList<BugHive> bugHives;
