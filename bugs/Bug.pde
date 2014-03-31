@@ -4,6 +4,7 @@ public class Bug {
   PVector velocity;
   PVector acceleration;
   float metabolism;
+  float topSpeed;
   PVector randomDir;
   PVector birthPlace;
   
@@ -19,7 +20,7 @@ public class Bug {
   float radius;
   float maxRadius;
   float growth;
-  float agro;
+  float aggro;
   PVector target;
   PVector loc;
   PVector locMod;
@@ -28,7 +29,7 @@ public class Bug {
   
   int age;
   float lifespan;
-  boolean isPredator;
+  //boolean isPredator;
   
   //reproduction modifiers
   float birthCost;
@@ -36,6 +37,22 @@ public class Bug {
   float litterSize;
   
   
+  //emotional drivers
+  float hungerAdd;
+  float hateAdd;
+  float hornyAdd;
+  
+  float hunger;
+  float hate;
+  float horny;
+  
+  boolean attack;
+  boolean sexy;
+  boolean run;
+  
+  
+  
+  /*--------------------------------------------Constructor----------------------------------------------*/
 
   //Constructor for setting location of the bug initially
   public Bug(float tempXpos, float tempYpos) 
@@ -52,13 +69,13 @@ public class Bug {
   }
   
   //Constructor for inheriting traits of parent bug
-   public Bug(Bug parentBug) 
+   public Bug(Bug parentBug, Bug otherBug) 
    {
-     Initialize(parentBug);
+     Initialize(parentBug, otherBug);
    }
   
   //initialization of bug's properties
-  private void Initialize(Bug parentBug)
+  private void Initialize(Bug parentBug, Bug otherBug)
   {
 
     velocity = new PVector(0,0);
@@ -69,41 +86,62 @@ public class Bug {
     
     if(parentBug != null)
     {
-      metabolism = modify(parentBug.metabolism);
+      metabolism = modify((parentBug.metabolism+otherBug.metabolism)/2);
       loc = parentBug.loc;
-      locMod =  new PVector(random(-10,10), random(-10,10));
+      locMod =  new PVector(random(-20,20), random(-20,20));
       loc.add(locMod);
-      reproPeriod = modify(parentBug.reproPeriod);
-      agro = modify(parentBug.agro);
-      //radius = modify(parentBug.radius);
-      health = modify(parentBug.birthHealth);
-      //bugMaxHealth =  modify(parentBug.bugMaxHealth);
-      lifespan = modify(parentBug.lifespan);
-      growth = modify(parentBug.growth);
-      //birthCost = modify(parentBug.birthCost);
-      litterSize =modify(parentBug.litterSize);
-      //offense = modify(parentBug.offense);
-      //defense = modify(parentBug.defense);
-      bugColor = parentBug.bugColor;
+      reproPeriod = modify((parentBug.reproPeriod+otherBug.reproPeriod)/2);
+      aggro = modify((parentBug.aggro+ otherBug.aggro)/2);
+      health = modify((parentBug.birthHealth+otherBug.birthHealth)/2);
+      
+      litterSize = modify((parentBug.litterSize+otherBug.litterSize)/2);
+      bugColor = (parentBug.bugColor+other.bugColor)/2;
+      
+      hungerAdd = modify((parentBug.hungerAdd+otherBug.hungerAdd)/2);
+      hornyAdd = modify((parentBug.hornyAdd+otherBug.hornyAdd)/2);
+      hateAdd = modify((parentBug.hateAdd+otherBug.hateAdd)/2);
+      
+      
     }
     else
     {
       metabolism = random(10);
       reproPeriod = int(1000+(randomGaussian()*100));
-      agro = random(100);
-      lifespan = (3000+random(2000));
+      aggro = abs(randomGaussian()*1000);
+      
       growth=random(1)*.1*(metabolism*.02);
+      litterSize = 1;//random(1,3);
+      bugColor = color(random(255),random(255),random(255));
+      health = random(100);
+      
+      
+      hungerAdd = int(random(10));
+      hornyAdd = int(random(10));
+      hateAdd = int(random(10));
+      
       //birthCost = random(health)/2;
-      litterSize = random(1,4);
+      //random(bugMaxHealth);
+      //bugMaxHealth = 1000+random(100);
       //offense = random(100);
       //defense = random(100);
-      bugColor = color(random(255),random(255),random(255));
-      //bugMaxHealth = 1000+random(100);
-      health = random(100);//random(bugMaxHealth);
     }
-    if (agro>75){
+    /*if (aggro>75){
       isPredator = true;
-    }
+    }*/
+    
+    attack=false;
+    sexy=false;
+    run=false;
+    
+  
+    hunger = 0;
+    horny = -100;
+    hate = 0;
+  
+  
+    //metabolism affects the following
+    lifespan = metabolism*(300+randomGaussian()*200);
+    topSpeed = metabolism/2;
     birthHealth = health;
     maxRadius = 20;//(lifespan/age)*((offense + defense)/80);
     if(reproPeriod<24){
@@ -118,46 +156,54 @@ public class Bug {
    return val+= randomGaussian()*(val*.1);
   }
 
+/*--------------------------------------------display----------------------------------------------*/
+
   public void display() {
     noStroke();
-    //fill(agro*4,health,0);
+    //fill(aggro*4,health,0);
     fill(bugColor);
     ellipse(loc.x,loc.y,radius,radius);
   }
 
 
+/*--------------------------------------------drive----------------------------------------------*/
+
   public void drive() {
+   //increase goals goals 
+    hunger += hungerAdd;
+    horny += hornyAdd;
+    hate += hateAdd;
     /*if (health> bugMaxHealth){
       health = bugMaxHealth;
     }*/
+    
     //bug life and energy spent
     turnCost = metabolism*.05;
-    health-= turnCost;
+    //health-= turnCost;
     age++;
-    if (health<=0 || age>=lifespan/(metabolism) || radius<=.01){
-      //killed = true;
+    if (health<=0 || age>=lifespan || radius<=0){
      die(); 
     }
     
     checkBoundaries();
-    reproduce();
+    //reproduce();
     decideActions();
     grow();
-      
-    
   }
+  
+  
+  
   private void grow(){
     if (age < lifespan*.1){
     radius+= growth;
     }
   }
   
-  
+  //check if out of bounds by 1000px, kill if so
   private void checkBoundaries()
   {
-        //check if out of bounds by 1000px, kill if so
-    if (loc.y<-1000 || loc.y>height+1000 || loc.x<-1000 || loc.x>width+1000){ 
-     //killed = true;
+    
+    if (loc.y<-boundary || loc.y>height+boundary || loc.x<-boundary || loc.x>width+boundary){ 
       die(); 
     }
   }
@@ -165,11 +211,16 @@ public class Bug {
   private boolean _isBirthing = false;
   private boolean _isBirthingAnimationFinished = false;
   private int _birthingFrameCount = 0;
-  private void reproduce()
+  
+  private void reproduce(Bug targetBug)
   {
-    if(age % int(reproPeriod/(metabolism*.5)) == 0)
+    
+    
+    float d = loc.dist(targetBug.loc);
+    if(d < radius*1.2 && targetBug.age>lifespan*.2 && age>lifespan*.2 && horny>0 )
     {
       _isBirthing = true;
+      horny=-300;
     }
     // reproduce
     //print("time=" + time + " and reproPeriod =" + reproPeriod + "\n");
@@ -179,15 +230,15 @@ public class Bug {
       showBirthingAnimation();
       
      //reproduce with variations of self
-     if(_isBirthingAnimationFinished)
-     {
-       int ls = int(round(litterSize));
-       for (int i = ls; i<= ls; i++){
-         babyBugs.add(new Bug(this));
-         //print ("A bug reproduced!\n");
-         //health -= birthCost;
+       if(_isBirthingAnimationFinished)
+       {
+         int ls = int(round(litterSize));
+         for (int i = ls; i<= ls; i++){
+           babyBugs.add(new Bug(this,targetBug));
+           //print ("A bug reproduced!\n");
+           //health -= birthCost;
+         }
        }
-     }
     }
   }
   
@@ -212,41 +263,36 @@ public class Bug {
   
   private void decideActions()
   {
-          //define target
-      if (isPredator){
-          //look for near by things to eat.
-          //target = new PVector(mouseX,mouseY);
-         Bug targetBug = getClosestBug(this, bugs);
-         
-         
-         if(targetBug != null)
-         {
-           target = targetBug.loc;
-           
-           //if it's close enough and we are hungry, eat it
-           eat(targetBug);
-         }
-         else
-         {
-           //if I'm the only bug left, stop moving
-           target = loc;
-         }
-
-      
-      }
-      else 
-      {
-
-      //if agression is below threshold, go for light
-        target = light.loc;//new PVector(mouseX,mouseY);
-        
-        //if the light is close enough, heal
-        heal(target);
-      }
-      
+    
+    Bug targetBug = getTarget(this, bugs);
+     
+    if(targetBug != null)
+    {
+       target = targetBug.loc;
+       //if it's close enough and we are hungry, eat it
+       if(sexy){
+       
+         reproduce(targetBug);
+       }
+       else if (attack)
+       {
+         eat(targetBug);
+       }
+       else if (run)
+       {
+        // print("run");
+       }
+       else
+       {
+         //if I'm the only bug left, stop moving
+         target = loc;
+       }
+    
       //move towards the target
       move(target);
+    }
   }
+  
   
   private void heal(PVector target)
   {
@@ -264,18 +310,10 @@ public class Bug {
     float d = loc.dist(targetBug.loc);
     if(d < radius*1.2)
     {
-      //compare bugs size.  larger bug will win likely win
-      //float attackRatio = offense - targetBug.defense;
-      //absorb the bug's health based on agro
-      //float bugAttackOutcome = targetBug.health;//offense * agro/targetBug.defense;
-      
-      health += targetBug.health*3;
-      
-      //print ("bugAttackOutcome is "+bugAttackOutcome);
-      //print ("targetBug.health is "+targetBug.health);
-      
+      health += 100;//targetBug.health*3;
       //hurt the target more. loss of energy overall.
-      targetBug.health=0;//-=bugAttackOutcome*8;
+      targetBug.health=0;
+      hunger=0;
     }
   }
   
@@ -289,11 +327,17 @@ public class Bug {
       
       dir.normalize();     // Normalize
       dir.mult(0.5);       // Scale 
+      if (run == true){
+        //print ("run = true");
+        dir.mult(-1);
+        hate -=20;
+      }
+        
       acceleration = dir;  // Set to acceleration
       
       // Motion 101!  Velocity changes by acceleration.  Location changes by velocity.
       velocity.add(acceleration);
-      velocity.limit(metabolism);
+      velocity.limit(topSpeed);
       loc.add(velocity);
   }
 
@@ -305,46 +349,81 @@ public class Bug {
 
 
   // A function that returns the closest point from a set
-  Bug getClosestBug(Bug hunter, ArrayList preyList) {
+  Bug getTarget(Bug self, ArrayList otherList) {
   
     // some impossibly high distance (ie something is always closer)
-    float distClosest = 999999;
+    float distClosest = 9999999;//metabolism*300;
     // the closest point
-    Bug theClosestBug = null;
+    Bug theTarget = null;
+    
     // Loop to find the closest point
     //print("PTS.size() = "+PTS.size());
-    for(int i = preyList.size()-1; i >= 0; i--){
-      // get the prey
-      Bug prey = (Bug)preyList.get(i);
-      if (prey.agro < agro && prey.health > turnCost*10){
-        PVector huntPos = hunter.loc;
-        PVector preyPos = prey.loc;
+ 
+      // get the closest
+      float priority = max(hunger,horny,hate);
+    
+    
+    if (priority == hunger){
+      attack= true;
+      for(int i = otherList.size()-1; i >= 0; i--){
+      Bug other = (Bug)otherList.get(i);
+      PVector selfPos = self.loc;
+      PVector otherPos = other.loc;
         
-        // get the distance
-        float d2 = PVector.dist(huntPos, preyPos);
-        
-        // ask the question
-        if(d2 < distClosest && hunter != prey){ // && hunter.offense>prey.defense
+      // get the distance
+      float bugDist = PVector.dist(selfPos, otherPos);
+        attack= true;
+        if(bugDist < distClosest && self != other && other.aggro < self.aggro*.95){ // && hunter.offense>prey.defense
           // update the closest distance
-          distClosest = d2;
+          distClosest = bugDist;
           // remember the closest pos
-          theClosestBug = prey;
+          theTarget = other;
+        }
       }
-
-      }
+      
     }
-  
+    if (priority == horny){
+        sexy= true;
+        for(int i = otherList.size()-1; i >= 0; i--){
+      Bug other = (Bug)otherList.get(i);
+      PVector selfPos = self.loc;
+      PVector otherPos = other.loc;
+        
+      // get the distance
+      float bugDist = PVector.dist(selfPos, otherPos);
+        attack= true;
+         if(bugDist < distClosest && self != other){ // && hunter.offense>prey.defense
+          // update the closest distance
+          distClosest = bugDist;
+          // remember the closest pos
+          theTarget = other;
+        }
+      }
+        
+    }
+     if (priority == hate){
+        run= true;
+        for(int i = otherList.size()-1; i >= 0; i--){
+          Bug other = (Bug)otherList.get(i);
+          PVector selfPos = self.loc;
+          PVector otherPos = other.loc;
+            
+          // get the distance
+          float bugDist = PVector.dist(selfPos, otherPos);
+          attack= true;
+           if(bugDist < distClosest && self != other && other.aggro > self.aggro*1.05){ 
+            // update the closest distance
+            distClosest = bugDist;
+            // remember the closest pos
+            theTarget = other;
+           }
+        }
+       
+    }
+
     // return the closest point
     //print(theClosestBug);
-    return theClosestBug;
-  
+   return theTarget;
   }
-
 }
-
-
-  
-  
-
-
 

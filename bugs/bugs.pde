@@ -1,8 +1,9 @@
-int bugCount = 100;
+int bugCount = 1000;
 ArrayList<Bug> bugs;
 ArrayList<Bug> babyBugs;
 ArrayList<BugHive> bugHives;
 PVector temp;
+int boundary;
 
 Light light;
 public int time = 0;
@@ -12,8 +13,9 @@ void setup() {
   frameRate(120);
   size(1280,720);
   background(0,0,0);
-  
   ellipseMode(RADIUS);
+  
+  boundary = 500;
   
   light = new Light();
   
